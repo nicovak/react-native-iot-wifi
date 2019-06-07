@@ -83,25 +83,46 @@ public class IOTWifiModule extends ReactContextBaseJavaModule {
         if (networkId != -1) {
             // Enable it so that android can connect
             wifiManager.disconnect();
+
             boolean success =  wifiManager.enableNetwork(networkId, true);
+
             if (!success) {
                 callback.invoke(errorFromCode(FailureCodes.FAILED_TO_ADD_CONFIG));
                 return;
             }
+
+
+            try {
+                Thread.sleep(2000);
+            } catch(InterruptedException e) {
+            }
+
+
             success = wifiManager.reconnect();
+
             if (!success) {
                 callback.invoke(errorFromCode(FailureCodes.FAILED_TO_CONNECT));
                 return;
             }
+
+            try {
+                Thread.sleep(2000);
+            } catch(InterruptedException e) {
+            }
+
+
             boolean connected = pollForValidSSSID(10, ssid);
+
             if (!connected) {
                 callback.invoke(errorFromCode(FailureCodes.FAILED_TO_CONNECT));
                 return;
             }
+
             if (!bindNetwork) {
                 callback.invoke();
                 return;
             }
+
             try {
                 bindToNetwork(ssid, callback);
             } catch (Exception e) {
